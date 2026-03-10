@@ -339,3 +339,16 @@ O sistema suporta crescimento gradual:
 - Banco de dados SQL que suporta milhares de registros sem perda de desempenho
 - Interface construída para acomodar listagens grandes com paginação e filtros
 - Para crescimento significativo, pode-se adicionar cache e otimizações de consulta
+
+--- 
+
+## 28. Como estão as tabelas do sistema?
+
+Atualmente a tabela relacional do sistema se encontra deste modo:
+
+- Organizada e com as relações já definidas
+- Precisa ser revisada e estruturada mais robustamente
+- Conta com todos os módulos integrados em um único conjunto
+
+<img width="1976" height="1027" alt="uml_clinica" src="https://github.com/user-attachments/assets/0aa2c518-3d58-42a2-b560-2cc406b8ded3" />
+
