@@ -1,354 +1,134 @@
-# OneClinic -- Documento de Visão
+# OneClinic — Documento de Visão
 
-> Última atualização: 26 Fevereiro 2026
+> **Versão:** 2.0 (SaaS Enterprise)  
+> **Última atualização:** 17 de Março de 2026
 
 ---
 
 ## 1. Qual é o principal objetivo do sistema?
 
-Centralizar e automatizar a gestão operacional de clínicas de estética de pequeno porte, substituindo controles manuais (cadernos, planilhas, WhatsApp) por um sistema único que integra agenda, financeiro, estoque e relacionamento com clientes.
+Prover uma plataforma SaaS (Software as a Service) multitenant para a gestão 360° de clínicas de estética. O sistema visa automatizar processos operacionais, financeiros e de fidelização, garantindo o isolamento total de dados entre diferentes clínicas e oferecendo flexibilidade através de uma engine de configurações dinâmicas.
 
 ---
 
 ## 2. Quais são as principais funcionalidades?
 
-- Autenticação com login, primeiro acesso (setup) e controle de sessão
-- Controle de acesso por nível (admin, secretário, profissional)
-- Gestão de colaboradores com cadastro, edição e exclusão
-- Sidebar dinâmica filtrada por nível de acesso
-- Nome da clínica configurável no primeiro acesso
-- Cadastro e histórico completo de clientes (sessões, compras, pagamentos)
-- Agendamento de sessões (avulsas, pacotes e planos recorrentes)
-- Controle de estoque de produtos (entradas, saídas, alertas de mínimo)
-- Gestão financeira com controle de caixa manual (entradas e saídas)
-- Criação e venda de pacotes de sessões e assinaturas
-- Sistema de cupons de desconto
-- Controle de crédito acumulado por cliente
-- Envio e registro de notificações (WhatsApp e e-mail)
-- Geração de relatórios e dashboards
-- Controle de inadimplência (sessões não pagas)
+- **Multitenancy Nativo:** Isolamento completo de dados por clínica através de identificadores únicos (UUID).
+- **Engine de Parâmetros:** Configuração dinâmica de status de agenda, métodos de pagamento, níveis de acesso e canais de comunicação via JSONB.
+- **Gestão de Fidelização:** Criação e controle de pacotes de sessões, assinaturas recorrentes e sistema de cupons com controle antifraude.
+- **Agenda Inteligente:** Controle de disponibilidade com restrição física de conflitos de horário diretamente no banco de dados.
+- **Estoque Auditável:** Registro de movimentações (entradas/saídas) com rastreabilidade de responsável e origem.
+- **Financeiro Avançado:** Controle de parcelamento, fluxo de caixa, gestão de inadimplência e cálculo automático de valores líquidos/descontos.
+- **CRM e Comunicação:** Histórico completo do cliente, controle de crédito acumulado e log de notificações (WhatsApp/E-mail).
+- **Auditoria de Sistema:** Log detalhado de alterações (INSERT/UPDATE/DELETE) com armazenamento de estados anteriores e atuais.
 
 ---
 
 ## 3. Quem vai usar o sistema?
 
-Três níveis de acesso:
+O sistema utiliza controle de acesso baseado em funções (RBAC), cujas permissões são definidas dinamicamente na tabela de parâmetros:
 
-- **Admin (dono/gestor da clínica):** acesso total a todas as funcionalidades, relatórios, exclusão de registros e configurações. É o primeiro usuário criado no sistema através do fluxo de setup inicial.
-- **Secretário(a):** acesso à agenda de todos os profissionais, cadastro de clientes, registro de atendimentos, estoque, financeiro operacional (sem relatórios de receita), notificações e caixa manual.
-- **Profissional:** acesso restrito à sua própria agenda, registro de atendimentos, uso de produtos em sessões e consulta de clientes.
-
-> O nível "colaborador" do esquema original foi dividido em dois: "secretário" e "profissional", pois as funções são distintas em uma clínica real. A secretária precisa gerenciar a agenda de todos e registrar pagamentos, enquanto o profissional só precisa ver sua própria agenda.
+- **Admin (Dono/Gestor):** Acesso total à gestão da clínica, colaboradores, configurações do sistema e relatórios financeiros estratégicos.
+- **Secretário(a):** Foco operacional; gerencia a agenda global, cadastros de clientes, recebimentos, fluxo de caixa e estoque.
+- **Profissional:** Acesso restrito à própria agenda, execução de atendimentos e registro de consumo de materiais.
 
 ---
 
 ## 4. O que é necessário cadastrar?
 
-- Dados da clínica (nome, configurado no primeiro acesso)
-- Colaboradores (nome, e-mail, cargo, nível de acesso, senha)
-- Clientes (nome, telefone, e-mail, CPF, endereço, crédito)
-- Produtos (nome, descrição, categoria, preços de compra e venda, estoque, mínimo)
-- Planos e pacotes (nome, preço, tipo, total de sessões, duração)
-- Agendamentos (cliente, profissional, data/hora, tipo, valor)
-- Cupons de desconto (código, valor, tipo, validade)
-- Lançamentos de caixa (tipo, valor, descrição, responsável)
+- **Clínica:** Nome, CNPJ (obrigatório para fins fiscais e contratuais SaaS) e configurações de conta.
+- **Parâmetros:** Definição de códigos e comportamentos para status, cores de interface e regras de negócio.
+- **Colaboradores:** Nome, e-mail (único por clínica), nível de acesso e vínculo com o Supabase Auth.
+- **Clientes:** Dados pessoais (CPF único por clínica), contatos e saldo de crédito.
+- **Produtos:** Itens de estoque com definição de estoque mínimo para alertas.
+- **Planos e Cupons:** Regras de desconto, total de sessões e validade de pacotes.
 
 ---
 
 ## 5. O que é necessário consultar?
 
-- Histórico completo de um cliente (sessões, compras, pagamentos, crédito)
-- Agenda do dia/semana por profissional
-- Saldo de estoque e alertas de produtos em baixa
-- Sessões não pagas e clientes inadimplentes
-- Saldo de caixa (entradas vs saídas)
-- Sessões restantes de pacotes/planos de cada cliente
-- Histórico de notificações enviadas
-- Relatórios financeiros por período
-- Lista de colaboradores e seus níveis de acesso (admin)
+- **Dashboard de Gestão:** Indicadores de receita, ocupação de agenda e saúde do estoque.
+- **Assinaturas Ativas:** Saldo de sessões restantes de cada cliente em tempo real.
+- **Trilha de Auditoria:** Logs de alterações para segurança e depuração.
+- **Inadimplência:** Lista dinâmica de parcelas vencidas e agendamentos não quitados.
+- **Conformidade LGPD:** Logs de comunicações enviadas e acessos a dados sensíveis.
 
 ---
 
 ## 6. O que é necessário editar?
 
-- Dados de colaboradores (nome, e-mail, cargo, nível de acesso)
-- Dados cadastrais de clientes
-- Status de agendamentos: pendente, confirmado, cancelado, concluído
-- Status de pagamento de sessões: pago/não pago
-- Quantidades de estoque (entradas e saídas)
-- Informações de planos e pacotes
-- Crédito acumulado de clientes
-- Dados de cupons (validade, usos)
+- **Status de Agendamento:** Fluxo dinâmico (Pendente, Confirmado, Concluído, Cancelado).
+- **Configurações de Parâmetros:** Alteração de cores e comportamentos de sistema sem necessidade de novo deploy.
+- **Saldos de Estoque:** Ajustes realizados via movimentações justificadas.
+- **Dados Cadastrais:** Atualização de informações de clientes e colaboradores.
 
 ---
 
 ## 7. O que é necessário excluir?
 
-- Colaboradores (admin, com proteção contra autoexclusão)
-- Agendamentos cancelados (com registro de motivo)
-- Clientes inativos (preferencialmente inativação, não exclusão definitiva)
-- Produtos descontinuados
-- Cupons expirados
-- Lançamentos de caixa incorretos (apenas admin)
+O sistema adota a política de **Soft Delete** (`deleted_at`) para manter a integridade referencial e histórica:
+- **Registros Operacionais:** Clientes, produtos e planos são marcados como excluídos, mas permanecem no banco para auditoria.
+- **Agendamentos:** Cancelamentos exigem registro de motivo e liberam o horário automaticamente na agenda.
 
 ---
 
 ## 8. O sistema precisa gerar relatórios?
 
-Sim. O sistema gera relatórios de:
-
-- Receita total e por serviço/período
-- Sessões realizadas, faltas e presença
-- Produtos mais usados e histórico de movimentações
-- Inadimplência e pagamentos pendentes
-- Fechamento de caixa diário
-- Clientes mais frequentes e ticket médio
-
-Restrição de acesso: apenas o admin acessa relatórios financeiros completos.
+Sim, com visibilidade baseada em nível de acesso:
+- **Financeiros:** DRE simplificado, faturamento por método de pagamento e ticket médio (Acesso Admin).
+- **Operacionais:** Consumo de produtos, produtividade por profissional e taxa de cancelamento.
 
 ---
 
 ## 9. O sistema precisa emitir comprovantes?
 
-Sim. O sistema emite:
-
-- Recibos de pagamento em PDF
-- Comprovantes de sessões realizadas
-- Comprovantes de compra de produtos
-- Extratos de crédito do cliente
+Sim. Geração de documentos em PDF:
+- Recibos de pagamento com detalhamento de descontos e métodos utilizados.
+- Extratos de uso de sessões para pacotes e planos.
+- Comprovantes de venda de produtos.
 
 ---
 
 ## 10. O sistema precisa enviar notificações?
 
-Sim. O sistema registra e envia notificações via:
-
-- WhatsApp (canal principal para clínicas pequenas)
-- E-mail como alternativa secundária
-- Tipos de notificação: pagamentos pendentes, promoções, avisos gerais e lembretes de agendamento
+Sim. O motor de notificações integra-se ao log de mensagens:
+- **Canais:** WhatsApp (Principal) e E-mail (Secundário).
+- **Gatilhos:** Confirmação de horário, lembretes de consulta, avisos de parcelas vencidas e promoções.
 
 ---
 
-## 11. Como começa o processo?
+## 11. Como começa o processo (Setup)?
 
-1. **Primeiro acesso (setup):** O dono instala o sistema e é guiado por um wizard de 3 etapas:
-   - Etapa 1: Define o nome da clínica
-   - Etapa 2: Preenche seus dados pessoais (nome, e-mail, cargo)
-   - Etapa 3: Define sua senha de acesso
-   - Resultado: conta admin criada, login automático, redirecionamento ao dashboard
-
-2. **Cadastro da equipe:** O admin cadastra secretários e profissionais pela página de colaboradores
-
-3. **Uso operacional:** A partir daí segue o fluxo normal:
-   - Cadastro de clientes
-   - Agendamento de sessões
-   - Confirmação de presença
-   - Registro de produtos utilizados
-   - Registro de pagamento
-   - Atualização automática de saldos e histórico
+1. **Provisionamento Tenant:** O sistema identifica e isola a nova clínica via CNPJ.
+2. **Setup de Parâmetros:** Carga inicial de status, métodos e níveis de acesso padrão.
+3. **Criação do Admin:** Vínculo do gestor ao Supabase Auth com proteção de hash Argon2.
+4. **Configuração de Operação:** Cadastro inicial de profissionais, produtos e planos.
 
 ---
 
-## 12. O que acontece depois?
+## 12. Segurança e LGPD
 
-- O histórico do cliente é atualizado
-- O estoque é ajustado automaticamente
-- O caixa registra a entrada financeira
-- Se houver inadimplência, o sistema sinaliza
-- Notificações podem ser disparadas automaticamente
-- Relatórios são atualizados em tempo real no dashboard
-- Menus da sidebar são atualizados dinamicamente conforme o nível do usuário logado
+- **Isolamento de Dados:** Filtro global obrigatório de `clinica_id` em todas as consultas.
+- **Proteção de Identidade:** Senhas protegidas com Argon2 + Salt + Pepper.
+- **Privacidade:** Mascaramento de dados sensíveis e logs de acesso a prontuários e CPFs.
+- **Concorrência:** Constraints de banco de dados impedindo agendamentos duplicados para o mesmo profissional.
 
 ---
 
-## 13. Quem faz cada parte?
+## 13. Tecnologias Utilizadas
 
-- **Admin:** cadastra colaboradores, produtos, planos, cupons; gerencia financeiro, relatórios e configurações. É o primeiro usuário do sistema, criado no setup inicial. Pode editar e excluir qualquer colaborador (exceto a si mesmo).
-- **Secretário(a):** cadastra clientes, agenda sessões, registra atendimentos, registra uso de produtos, consulta e manipula agenda de todos os profissionais, registra pagamentos e lançamentos de caixa.
-- **Profissional:** consulta sua própria agenda e sessões, registra atendimentos, registra uso de produtos.
-- **Sistema (automático):** baixa de estoque, cálculo de crédito, alertas de estoque mínimo, controle de validade de planos, detecção de primeiro acesso e redirecionamento para setup.
-
----
-
-## 14. Quais dados são obrigatórios?
-
-- Clínica: nome (definido no setup)
-- Colaborador: nome, e-mail, cargo, nível de acesso, senha (mínimo 6 caracteres)
-- Cliente: nome (mínimo obrigatório)
-- Produto: nome e quantidade em estoque
-- Agendamento: cliente, profissional, data/hora e tipo
-- Plano: nome, preço e tipo
-- Pagamento: cliente, valor e método
-- Cupom: código e valor de desconto
+- **Frontend:** Vue.js 3, Vite, PrimeVue.
+- **Backend:** Django (Arquitetura em Camadas).
+- **Banco de Dados:** PostgreSQL (JSONB, UUID, INET).
+- **Autenticação:** Supabase Auth integrado à implementação customizada de Argon2.
 
 ---
 
-## 15. Existe alguma informação sensível?
+## 14. Diagrama de Classes e Relações (ERD)
 
-Sim:
+O modelo atual contempla 4 eixos principais (Configuração, CRM/Recorrência, Operacional/Estoque e Financeiro), garantindo que a regra de negócio seja ditada pelo banco de dados para permitir escalabilidade.
 
-- CPF dos clientes (dado pessoal protegido pela LGPD)
-- E-mail e telefone (dados de contato)
-- Senhas dos colaboradores (armazenadas como hash, nunca em texto puro)
-- Histórico de sessões (pode conter informações de saúde/estética)
-- Dados financeiros (pagamentos, inadimplência)
+<img width="2079" height="1646" alt="uml_clinica_atualizado" src="https://github.com/user-attachments/assets/735d51c0-a264-4c06-a536-74d8d8b89d03" />
+
 
 ---
-
-## 16. O sistema precisa guardar histórico?
-
-Sim. O sistema guarda histórico completo de:
-
-- Todas as sessões realizadas por cliente
-- Todas as compras de produtos
-- Todos os pagamentos e recibos
-- Movimentações de estoque
-- Notificações enviadas
-- Lançamentos de caixa
-- Colaboradores cadastrados e seus níveis
-
----
-
-## 17. Por quanto tempo os dados devem ficar salvos?
-
-- Dados financeiros: mínimo 5 anos (exigência fiscal brasileira)
-- Dados de clientes: enquanto houver relação comercial ativa, podendo ser anonimizados após inatividade prolongada (LGPD)
-- Histórico de sessões: recomendado manter por pelo menos 2 anos
-- Logs de notificações: 1 ano no mínimo
-
----
-
-## 18. O sistema precisa controlar pagamentos?
-
-Sim. O sistema controla:
-
-- Pagamentos por sessão (avulsa, pacote, plano)
-- Vendas de produtos
-- Múltiplas formas de pagamento (dinheiro, Pix, cartão, boleto)
-- Descontos e cupons aplicados
-- Crédito acumulado do cliente
-
----
-
-## 19. O sistema precisa controlar parcelas?
-
-Sim. O sistema suporta:
-
-- Parcelamento de pacotes e planos
-- Controle de parcelas pagas e pendentes
-- Alertas de vencimento
-- Registro de inadimplência
-
----
-
-## 20. O sistema precisa emitir recibo?
-
-Sim. O sistema emite recibos em PDF contendo:
-
-- Dados do cliente e da clínica
-- Descrição do serviço ou produto
-- Valor pago, desconto aplicado e método de pagamento
-- Data e identificação do responsável
-
----
-
-## 21. O sistema precisa saber quem está devendo?
-
-Sim. O sistema identifica inadimplência através de:
-
-- Agendamentos com campo `pago = false`
-- Parcelas vencidas
-- Dashboard com lista de devedores
-- Envio automático de notificações de cobrança
-
----
-
-## 22. Existem níveis diferentes de acesso?
-
-Sim, três níveis:
-
-- **Admin:** acesso total (cadastros, financeiro, relatórios, exclusões, configurações, gestão de colaboradores)
-- **Secretário(a):** acesso operacional (agenda de todos, clientes, estoque, financeiro básico, caixa manual, notificações)
-- **Profissional:** acesso restrito (agenda própria, atendimentos, consulta de clientes)
-
-| Rota | Admin | Secretário | Profissional |
-|------|-------|------------|--------------|
-| Dashboard | Sim | Sim | Sim |
-| Clientes | Sim | Sim | Sim |
-| Agenda | Sim | Sim | Sim |
-| Planos e Pacotes | Sim | Sim | Não |
-| Estoque | Sim | Sim | Não |
-| Financeiro | Sim | Sim | Não |
-| Caixa Manual | Sim | Sim | Não |
-| Notificações | Sim | Sim | Não |
-| Relatórios | Sim | Não | Não |
-| Colaboradores | Sim | Não | Não |
-
----
-
-## 23. Funcionários podem ver tudo?
-
-Não. Colaboradores têm acesso limitado:
-
-- A sidebar filtra menus automaticamente pelo nível de acesso
-- Páginas restritas exibem tela de "Acesso Negado" se o nível não for permitido
-- Profissionais veem apenas sua própria agenda e clientes que atendem
-- Secretários não acessam relatórios financeiros completos nem gestão de colaboradores
-- Nenhum colaborador pode excluir registros (apenas admin)
-
----
-
-## 24. Apenas o dono pode excluir algo?
-
-Sim. Exclusão de registros é restrita ao nível admin:
-
-- Exclusão de colaboradores (com proteção contra autoexclusão)
-- Exclusão de clientes, produtos, planos
-- Cancelamento de pagamentos
-- Estorno de lançamentos de caixa
-- Colaboradores podem apenas cancelar agendamentos próprios, com notificação ao admin
-
----
-
-## 25. Existe pretensão de expandir o negócio?
-
-O sistema foi projetado para ser escalável:
-
-- Estrutura modular que permite adicionar novas funcionalidades
-- Banco de dados relacional que suporta crescimento
-- Interface responsiva que funciona em desktop e mobile
-
----
-
-## 26. O sistema pode ter mais unidades?
-
-Atualmente o sistema atende uma única unidade. Para multiunidades seria necessário adicionar:
-
-- Tabela de unidades/filiais
-- Vínculo de colaboradores e estoque por unidade
-- Relatórios consolidados e por filial
-- A arquitetura atual permite essa expansão com ajustes no banco de dados
-
----
-
-## 27. O sistema vai aumentar o número de usuários?
-
-O sistema suporta crescimento gradual:
-
-- Cadastro ilimitado de colaboradores com diferentes níveis de acesso
-- Banco de dados SQL que suporta milhares de registros sem perda de desempenho
-- Interface construída para acomodar listagens grandes com paginação e filtros
-- Para crescimento significativo, pode-se adicionar cache e otimizações de consulta
-
---- 
-
-## 28. Como estão as tabelas do sistema?
-
-Atualmente a tabela relacional do sistema se encontra deste modo:
-
-- Organizada e com as relações já definidas
-- Precisa ser revisada e estruturada mais robustamente
-- Conta com todos os módulos integrados em um único conjunto
-
-<img width="1976" height="1027" alt="uml_clinica" src="https://github.com/user-attachments/assets/0aa2c518-3d58-42a2-b560-2cc406b8ded3" />
-
