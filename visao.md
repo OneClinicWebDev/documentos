@@ -17,7 +17,7 @@ Prover uma plataforma SaaS (Software as a Service) multitenant para a gestão 36
 - **Engine de Parâmetros:** Configuração dinâmica de status de agenda, métodos de pagamento, níveis de acesso e canais de comunicação via JSONB.
 - **Gestão de Fidelização:** Criação e controle de pacotes de sessões, assinaturas recorrentes e sistema de cupons com controle antifraude.
 - **Agenda Inteligente:** Controle de disponibilidade com restrição física de conflitos de horário diretamente no banco de dados.
-- **Estoque Auditável:** Registro de movimentações (entradas/saídas) com rastreabilidade de responsável e origem.
+- **Estoque Auditável:** Registro de movimentações (entradas/saídas) com registro de vendas, uso ou falta.
 - **Financeiro Avançado:** Controle de parcelamento, fluxo de caixa, gestão de inadimplência e cálculo automático de valores líquidos/descontos.
 - **CRM e Comunicação:** Histórico completo do cliente, controle de crédito acumulado e log de notificações (WhatsApp/E-mail).
 - **Auditoria de Sistema:** Log detalhado de alterações (INSERT/UPDATE/DELETE) com armazenamento de estados anteriores e atuais.
